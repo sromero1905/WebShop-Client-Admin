@@ -132,20 +132,39 @@ namespace CapaDatos
                 }
                 
 
-
             }
             catch (Exception ex)
             {
                 resultado = false;
-                Mensaje = ex.Message;
-
-                
+                Mensaje = ex.Message;       
             }
             return resultado = true;
         }
 
+        public bool Eliminar(int id, out string Mensaje)
+        {
+            bool resultado = false;
+            Mensaje = string.Empty;
 
-   
-        
+            try
+            {
+                using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
+                {
+                    SqlCommand cmd = new SqlCommand("delete top(1) from usuarios where IdUsuarios = @id",oconexion);
+                    cmd.Parameters.AddWithValue("@Id", id);
+                    cmd.CommandType = CommandType.Text;
+                    oconexion.Open();
+                    resultado = cmd.ExecuteNonQuery() > 0 ? true : false;
+                   
+                }
+            }
+            catch (Exception ex)
+            {
+
+                resultado = false;
+                Mensaje = ex.Message;  
+            }
+            return resultado;
+        }
     }
 }
