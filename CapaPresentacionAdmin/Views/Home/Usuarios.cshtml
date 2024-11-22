@@ -54,18 +54,18 @@
                     <input id="txtid" type="text"value="0"/>
                     <div class="col-sm-6">
                         <label for="txtnombres" class="form-label">Nombres</label>
-                        <input type="text" class="form-control" id="txtnombres">
+                        <input type="text" class="form-control" id="txtnombres" autocomplete="off">
                     </div>
 
 
                     <div class="col-sm-6">
                         <label for="txtapellidos" class="form-label">Apellidos</label>
-                        <input type="text" class="form-control" id="txtapellidos">
+                        <input type="text" class="form-control" id="txtapellidos" autocomplete="off">
                     </div>
 
                     <div class="col-sm-6">
                         <label for="txtcorrreo" class="form-label">Correo</label>
-                        <input type="text" class="form-control" id="txtcorrreo">
+                        <input type="text" class="form-control" id="txtcorrreo" autocomplete="off">
                     </div>
 
                     <div class="col-sm-6">
@@ -77,6 +77,13 @@
                     </div>
 
                     
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="alert alert-danger" role="alert" id="mensajeError">
+                            A simple danger alert—check it out!
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -137,6 +144,7 @@
             $("#txtapellidos").val('');
             $("#txtcorrreo").val('');
             $("#cboactivo").val(1); 
+            $("#mensajeError").hide(); 
 
             if (json != null) {
 
@@ -173,17 +181,59 @@
                Correo: $("#txtcorrreo").val(),
                Nombres: $("#txtnombres").val()
            }
-           if (Usuario.IdUsuario == 0) {
-               tabledata.row.add(Usuario).draw(false)
 
-           } else {
+           jQuery.ajax({
+               url: '@Url.Action("GuardarUsuario","Home")',
+               type: "POST",
+               data: JSON.stringify({ objeto: Usuario }),
+               dataType: "json",
+               contentType: "application/json; charset-utf-8",
+               success: function (data) {
 
-               tabledata.row(filaSeleccionada).data(Usuario).draw(false)
-               
-          
-           }
-           $("#FormModal").modal("hide")
+     
+                   //USUARIO NUEVO
+                   if (Usuario.IdUsuario == 0) {
+                       if (data.resultado != 0) {
+                           Usuario.IdUsuario = data.resultado;
+                           tabledata.row.add(Usuario).draw(false)
+                           $("#FormModal").modal("hide")
+       
 
+                       } else {
+                           $("#mensajeError").text(data.mensaje); 
+                           $("#mensajeError").show(); 
+                       }
+
+                   }
+                       //USUARIO Editado
+
+                   else {
+
+                       if (data.resultado) {
+                           tabledata.row(filaSeleccionada).data(Usuario).draw(false)
+                           filaSeleccionada = null;
+                           $("#FormModal").modal("hide")
+                       } else {
+                           $("#mensajeError").text(data.mensaje);
+                           $("#mensajeError").show(); 
+                       }
+
+                     
+
+                   }
+
+               },
+               error: function (error) {
+                   console.log(error)
+               },
+               beforeSend: function () {
+
+               }
+           })
+
+
+
+         
 
        }
     </script>
