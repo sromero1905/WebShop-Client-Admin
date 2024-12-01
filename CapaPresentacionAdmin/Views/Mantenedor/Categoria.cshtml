@@ -109,14 +109,13 @@
             responsive: true,
             ordering: false,
             ajax: {
-                url: "@Url.Action("ListarUsuarios", "Home")",
+                url: "@Url.Action("ListarCategoria", "Mantenedor")",
                 type: 'GET',
                 dataType: "json"
             },
             columns: [
-                { data: "Nombres" },
-                { data: "Apellidos" },
-                { data: "Correo" },
+               
+                { data: "Descripcion" },
                 {
                     data: "Activo",
                     render: function (valor) {
@@ -139,17 +138,13 @@
 
         function abrirModal(json) {
             $("#txtid").val(0);
-            $("#txtnombres").val('');
-            $("#txtapellidos").val('');
-            $("#txtcorrreo").val('');
+            $("#txtDescripcion").val('');
             $("#cboactivo").val(1);
             $("#mensajeError").hide();
 
             if (json != null) {
-                $("#txtid").val(json.IdUsuario);
-                $("#txtnombres").val(json.Nombres);
-                $("#txtapellidos").val(json.Apellidos);
-                $("#txtcorrreo").val(json.Correo);
+                $("#txtid").val(json.IdCategoria);
+                $("#txtDescripcion").val(json.Descripcion);
                 $("#cboactivo").val(json.Activo ? 1 : 0);
             }
             $("#FormModal").modal("show");
@@ -163,9 +158,9 @@
 
 
         $("#tabla tbody").on("click", '.btn-eliminar', function () {
-            let usuarioSeleccionado = $(this).closest("tr");
+            let cateogoriaSeleccionada = $(this).closest("tr");
 
-            let data = tabledata.row(usuarioSeleccionado).data();
+            let data = tabledata.row(cateogoriaSeleccionada).data();
 
             Swal.fire({
                 title: "¿Estás seguro?",
@@ -180,12 +175,12 @@
                 if (result.isConfirmed) {
                     Swal.fire({
                         title: "Eliminado",
-                        text: "El usuario ha sido eliminado.",
+                        text: "La Categoria ha sido eliminado.",
                         icon: "success"
                     });
 
                     jQuery.ajax({
-                        url: '@Url.Action("EliminarUsuario","Home")',
+                        url: '@Url.Action("EliminarCategoria", "Home")',
                         type: 'POST',
                         data: JSON.stringify({ id: data.IdUsuario }),
                         dataType: "json",
@@ -196,7 +191,7 @@
                             } else {
                                 Swal.fire({
                                     icon: "error",
-                                    title: "no se puedo eliminar el usuario",
+                                    title: "no se puedo eliminar la categoria",
                                     text: data.mensaje,
                                     footer: '<a href="#">Why do I have this issue?</a>',
 
